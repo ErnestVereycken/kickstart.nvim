@@ -15,6 +15,9 @@ return {
   },
   opts = {
     filesystem = {
+      follow_current_file = {
+        enabled = true, -- <-- This enables intelligent follow
+      },
       window = {
         mappings = {
           ['\\'] = 'close_window',
