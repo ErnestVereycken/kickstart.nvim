@@ -200,13 +200,45 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
--- added keymaps
-
+-- my keymaps - start --
 vim.keymap.set('n', '-', function()
   vim.opt.paste = true
   vim.cmd 'normal! "+P' -- paste *before* cursor line
   vim.opt.paste = false
 end, { silent = true })
+
+-- toggles
+vim.keymap.set('n', '<leader>e', ':Neotree toggle<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>e', ':Neotree toggle<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>o', ':vsplit<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>o', ':vsplit<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>z', ':q<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>so', ':Telescope resume<CR><Esc>', { noremap = true, silent = true })
+-- insert code
+vim.keymap.set('n', '<leader>inc', 'i#include <><Esc>i', { desc = 'insert #include' })
+vim.keymap.set('n', '<leader>if', 'iif () {}<Esc>bba', { desc = 'insert if' })
+vim.keymap.set('n', '<leader>il', 'i[&](){}<Esc>hhi', { desc = 'insert lambda' })
+vim.keymap.set('n', '<leader>ire', [[iRET_ON_ERR();<Esc>F(a]], { desc = 'insert RET_ON_ERR' })
+vim.keymap.set('n', '<leader>itt', 'iTEST_CASE("")<CR>{<CR>}<Esc>kkf"a', { desc = 'insert TEST_CASE' })
+vim.keymap.set('n', '<leader>ibr', 'iauto breakpoint = "breakpoint";<Esc>', { desc = 'insert breakpoint' })
+vim.keymap.set('n', '<leader>i5', 'i{}<Esc>i', { desc = 'insert brace pair' })
+vim.keymap.set('n', '<leader>i6', 'i[]<Esc>i', { desc = 'insert brackets pair' })
+-- navigation --
+vim.keymap.set('n', '<Leader>h', function()
+  local cur_win = vim.api.nvim_get_current_win()
+  local right_win = vim.fn.winnr 'l'
+  local left_win = vim.fn.winnr 'h'
+
+  if vim.fn.winnr() == left_win then
+    vim.cmd 'wincmd l'
+  elseif vim.fn.winnr() == right_win then
+    vim.cmd 'wincmd h'
+  else
+    vim.cmd 'wincmd l'
+  end
+end, { noremap = true, silent = true })
+
+-- my keymaps - stop --
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -356,7 +388,7 @@ require('lazy').setup({
       -- Document existing key chains
       spec = {
         { '<leader>s', group = '[S]earch' },
-        { '<leader>t', group = '[T]oggle' },
+        -- { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
@@ -632,7 +664,7 @@ require('lazy').setup({
           --
           -- This may be unwanted, since they displace some of your code
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
-            map('<leader>th', function()
+            map('<leader>@', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
           end
@@ -684,9 +716,9 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
