@@ -214,6 +214,7 @@ vim.keymap.set('n', '<leader>o', ':vsplit<CR>', { noremap = true, silent = true 
 vim.keymap.set('n', '<leader>o', ':vsplit<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>z', ':q<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>so', ':Telescope resume<CR><Esc>', { noremap = true, silent = true })
+
 -- insert code
 vim.keymap.set('n', '<leader>inc', 'i#include <><Esc>i', { desc = 'insert #include' })
 vim.keymap.set('n', '<leader>if', 'iif () {}<Esc>bba', { desc = 'insert if' })
@@ -221,8 +222,10 @@ vim.keymap.set('n', '<leader>il', 'i[&](){}<Esc>hhi', { desc = 'insert lambda' }
 vim.keymap.set('n', '<leader>ire', [[iRET_ON_ERR();<Esc>F(a]], { desc = 'insert RET_ON_ERR' })
 vim.keymap.set('n', '<leader>itt', 'iTEST_CASE("")<CR>{<CR>}<Esc>kkf"a', { desc = 'insert TEST_CASE' })
 vim.keymap.set('n', '<leader>ibr', 'iauto breakpoint = "breakpoint";<Esc>', { desc = 'insert breakpoint' })
-vim.keymap.set('n', '<leader>i5', 'i{}<Esc>i', { desc = 'insert brace pair' })
-vim.keymap.set('n', '<leader>i6', 'i[]<Esc>i', { desc = 'insert brackets pair' })
+vim.keymap.set('n', '<leader>4', 'bea[]<Esc>i', { desc = 'insert brackets pair' })
+vim.keymap.set('n', '<leader>5', 'bea{}<Esc>i', { desc = 'insert brace pair' })
+vim.keymap.set('n', '<leader>ilog', 'iopenlog("SLI-LOG", LOG_PID, LOG_USER);<Esc>osyslog(LOG_ERR, "");<Esc>ba')
+
 -- navigation --
 vim.keymap.set('n', '<Leader>h', function()
   local cur_win = vim.api.nvim_get_current_win()
@@ -237,6 +240,30 @@ vim.keymap.set('n', '<Leader>h', function()
     vim.cmd 'wincmd l'
   end
 end, { noremap = true, silent = true })
+
+--- copy stuff ---
+--- Copy breakpoint
+vim.keymap.set('n', '<leader>cb', function()
+  local filename = vim.fn.expand '%:t' -- just filename, use %:p for full path
+  local line = vim.fn.line '.'
+  local text = 'b ' .. filename .. ':' .. line
+  vim.fn.setreg('+', text) -- copy to system clipboard
+  vim.notify('Copied: ' .. text, vim.log.levels.INFO, { title = 'Clipboard' })
+end, { desc = 'copy b <file>:<line>' })
+
+-- Copy filename
+vim.keymap.set('n', '<leader>cf', function()
+  local filename = vim.fn.expand '%:t'
+  vim.fn.setreg('+', filename)
+  vim.notify('Copied filename: ' .. filename, vim.log.levels.INFO, { title = 'Clipboard' })
+end, { desc = 'copy filename' })
+
+-- Copy full path
+vim.keymap.set('n', '<leader>cp', function()
+  local path = vim.fn.expand '%:p'
+  vim.fn.setreg('+', path)
+  vim.notify('Copied path: ' .. path, vim.log.levels.INFO, { title = 'Clipboard' })
+end, { desc = 'copy full path' })
 
 -- my keymaps - stop --
 
@@ -717,7 +744,7 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         clangd = {},
-        -- gopls = {},
+        gopls = {},
         pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
